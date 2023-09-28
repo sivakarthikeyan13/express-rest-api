@@ -1,7 +1,10 @@
 import { Express, Request, Response } from "express";
-import { createUserHandler } from "./controller/user.controller";
+import {
+  createUserHandler,
+  getUserHandler,
+} from "./controller/user.controller";
 import validateResource from "./middleware/validateResource";
-import { createUserSchema } from "./schema/user.schema";
+import { createUserSchema, getUserSchema } from "./schema/user.schema";
 import {
   createUserSessionHandler,
   deleteSessionHandler,
@@ -27,10 +30,15 @@ function routes(app: Express) {
     res.sendStatus(200)
   );
 
-  // users endpoints
+  // user endpoints
   app.post("/api/users", validateResource(createUserSchema), createUserHandler);
+  app.get(
+    "/api/users",
+    [requireUser, validateResource(getUserSchema)],
+    getUserHandler
+  );
 
-  // sessions endpoints
+  // session endpoints
   app.post(
     "/api/sessions",
     validateResource(createSessionSchema),
@@ -39,7 +47,7 @@ function routes(app: Express) {
   app.get("/api/sessions", requireUser, getUserSessionsHandler);
   app.delete("/api/sessions", requireUser, deleteSessionHandler);
 
-  // products endpoints
+  // product endpoints
   app.post(
     "/api/products",
     [requireUser, validateResource(createProductSchema)],
@@ -63,4 +71,3 @@ function routes(app: Express) {
 }
 
 export default routes;
-

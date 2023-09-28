@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import logger from "../utils/logger";
-import { createUser } from "../service/user.service";
+import { createUser, findUser } from "../service/user.service";
 import { CreateUserInput } from "../schema/user.schema";
 
 async function createUserHandler(
@@ -19,4 +19,14 @@ async function createUserHandler(
   }
 }
 
-export { createUserHandler };
+async function getUserHandler(req: Request, res: Response) {
+  const userId = res.locals.user._id;
+
+  const user = await findUser({ _id: userId });
+  if (!user) {
+    return res.sendStatus(404);
+  }
+  return res.send(user);
+}
+
+export { createUserHandler, getUserHandler };
